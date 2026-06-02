@@ -1,4 +1,5 @@
 ﻿Imports System.Runtime.InteropServices
+Imports System.Threading
 Imports System.Windows.Forms.VisualStyles.VisualStyleElement.Rebar
 
 Public Class frmCOMRedirect
@@ -42,7 +43,13 @@ Public Class frmCOMRedirect
       com = New LegacySerialCommunication("COM3", comDCB,
        Sub(data, count)
           Dim txt = System.Text.Encoding.ASCII.GetString(data, 0, count)
-          Me.BeginInvoke(Sub() TextBox1.AppendText(txt))
+          Me.BeginInvoke(Sub()
+                            TextBox1.AppendText(txt)
+                            AppActivate("Untitled - Notepad")
+                            Thread.Sleep(200)
+                            SendKeys.SendWait(txt)
+                         End Sub
+          )
        End Sub)
    End Sub
 
