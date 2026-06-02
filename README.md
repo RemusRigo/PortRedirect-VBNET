@@ -13,7 +13,7 @@ Read a specified COM port and redirect it
 
 ## Installation
 
-You must install .NET Runtime 10 x64 and then just run SysPurge.exe
+You must install .NET Runtime 10 x64 and then just run COMRedirect.exe
 
 
 
