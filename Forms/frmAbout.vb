@@ -5,6 +5,9 @@
 '--------------------------------------------------------------------------------------------------
 Public Class frmAbout
    Private Sub frmAbout_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+      lblTitle.Text = AppData.appName
+      lblVer.Text = AppData.appVersion
+      lnkLblGitHub.Text = AppData.appLink
       lnkLblGitHub.Links.Add(0, lnkLblGitHub.Text.Length, "https://github.com/RemusRigo/")
    End Sub
 

@@ -11,6 +11,7 @@ Public Class AppSettings
    Public Property Parity As Integer = 0
    Public Property StopBits As Integer = 1
    Public Property FlowControl As Integer = 0
+   Public Property WindowTitle As String = "Notepad"
 
    Private ReadOnly Property SettingsFile As String
       Get
@@ -28,6 +29,7 @@ Public Class AppSettings
          Parity = 0
          StopBits = 1
          FlowControl = 0
+         WindowTitle = "*Notepad"
          Return
       End If
 
@@ -41,6 +43,7 @@ Public Class AppSettings
          Parity = If(com("Parity")?.AsValue().GetValue(Of Integer)(), 0)
          StopBits = If(com("StopBits")?.AsValue().GetValue(Of Integer)(), 1)
          FlowControl = If(com("FlowControl")?.AsValue().GetValue(Of Integer)(), 0)
+         WindowTitle = If(com("WindowTitle")?.AsValue().GetValue(Of String)(), "Notepad")
       End If
    End Sub
 

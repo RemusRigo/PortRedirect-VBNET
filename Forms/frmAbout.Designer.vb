@@ -41,7 +41,7 @@ Partial Class frmAbout
       lnkLblGitHub.Size = New Size(322, 36)
       lnkLblGitHub.TabIndex = 2
       lnkLblGitHub.TabStop = True
-      lnkLblGitHub.Text = "© 2026 Remus Rigo"
+      lnkLblGitHub.Text = "appLink"
       lnkLblGitHub.TextAlign = ContentAlignment.MiddleCenter
       ' 
       ' lblTitle
@@ -52,7 +52,7 @@ Partial Class frmAbout
       lblTitle.Name = "lblTitle"
       lblTitle.Size = New Size(326, 56)
       lblTitle.TabIndex = 3
-      lblTitle.Text = "AutoLogon"
+      lblTitle.Text = "appTitle"
       lblTitle.TextAlign = ContentAlignment.MiddleCenter
       ' 
       ' lblVer
@@ -63,7 +63,7 @@ Partial Class frmAbout
       lblVer.Name = "lblVer"
       lblVer.Size = New Size(326, 25)
       lblVer.TabIndex = 4
-      lblVer.Text = "v1.1 2026-04-25"
+      lblVer.Text = "appVer"
       lblVer.TextAlign = ContentAlignment.MiddleCenter
       ' 
       ' imgPayPal

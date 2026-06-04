@@ -22,26 +22,29 @@ Public Class LegacySerialCommunication
          IntPtr.Zero)
 
       If handle = CType(-1, IntPtr) Then
+         Log.Instance.Error("Failed to open port: " & port)
          Throw New Exception("Cannot open port " & port)
       End If
 
       comDCB.DCBlength = Marshal.SizeOf(GetType(DCB))
       If Not SetCommState(handle, comDCB) Then
+         Log.Instance.Error("Failed to set COM state for port: " & port)
          Throw New Exception("SetCommState failed")
       End If
 
       Dim t As New COMMTIMEOUTS()
-      t.ReadIntervalTimeout = -1
+      t.ReadIntervalTimeout = 100
       t.ReadTotalTimeoutMultiplier = 0
-      t.ReadTotalTimeoutConstant = 0
+      t.ReadTotalTimeoutConstant = 100
       t.WriteTotalTimeoutMultiplier = 0
       t.WriteTotalTimeoutConstant = 0
 
       If Not SetCommTimeouts(handle, t) Then
+         Log.Instance.Error("Failed to set COM timeouts for port: " & port)
          Throw New Exception("SetCommTimeouts failed")
       End If
 
-      running = True
+      Threading.Volatile.Write(running, True)
       readThread = New Thread(AddressOf ReaderLoop)
       readThread.IsBackground = True
       readThread.Start()
@@ -50,22 +53,44 @@ Public Class LegacySerialCommunication
    Private Sub ReaderLoop()
       Dim buffer(255) As Byte
 
-      While running
+      While Threading.Volatile.Read(running)
          Dim read As Integer = 0
 
          If ReadFile(handle, buffer, buffer.Length, read, IntPtr.Zero) Then
-            If read > 0 Then
+            If read > 0 AndAlso Threading.Volatile.Read(running) Then
+               Dim data = System.Text.Encoding.ASCII.GetString(buffer, 0, read)
+               Log.Instance.Info("Received: " & data & " [" & read & " bytes]")
                callback(buffer, read)
             End If
          Else
-            Thread.Sleep(1)
+            If Threading.Volatile.Read(running) Then
+               Thread.Sleep(1)
+            End If
          End If
       End While
    End Sub
 
    Public Sub Close()
-      running = False
-      CloseHandle(handle)
+      Threading.Volatile.Write(running, False)
+
+      If handle <> IntPtr.Zero Then
+         CancelIo(handle)
+      End If
+
+      If readThread IsNot Nothing Then
+         If readThread.IsAlive Then
+            readThread.Join(500)
+         End If
+         readThread = Nothing
+      End If
+
+      If handle <> IntPtr.Zero Then
+         PurgeComm(handle, PURGE_RXCLEAR Or PURGE_TXCLEAR)
+         CloseHandle(handle)
+         handle = IntPtr.Zero
+      End If
+
+      Log.Instance.Info("COM port closed and thread joined.")
    End Sub
 
 End Class

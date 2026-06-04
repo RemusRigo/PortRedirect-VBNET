@@ -2,12 +2,17 @@
 ' kernel32_dll
 '
 '   © 2026 Remus Rigo
-'      v1.0 2026-06-01
+'      v1.0 2026-06-05
 '--------------------------------------------------------------------------------------------------
 
 Imports System.Runtime.InteropServices
 
 Public Module kernel32_dll
+
+   Public Const PURGE_TXABORT As Integer = &H1
+   Public Const PURGE_RXABORT As Integer = &H2
+   Public Const PURGE_TXCLEAR As Integer = &H4
+   Public Const PURGE_RXCLEAR As Integer = &H8
 
    '-----------------------------------------------------------------------------------------------
    ' Structures
@@ -43,6 +48,10 @@ Public Module kernel32_dll
    '-----------------------------------------------------------------------------------------------
    ' Functions
 
+   <DllImport("kernel32.dll", SetLastError:=True)>
+   Friend Function CancelIo(ByVal hFile As IntPtr) As <MarshalAs(UnmanagedType.Bool)> Boolean
+   End Function
+
    <DllImport("kernel32.dll", SetLastError:=True, CharSet:=CharSet.Auto)>
    Friend Function CreateFile(
         lpFileName As String,
@@ -60,6 +69,10 @@ Public Module kernel32_dll
 
    <DllImport("kernel32.dll", SetLastError:=True)>
    Friend Function GetCommState(hFile As IntPtr, ByRef dcb As DCB) As Boolean
+   End Function
+
+   <DllImport("kernel32.dll")>
+   Friend Function PurgeComm(hFile As IntPtr, dwFlags As UInteger) As Boolean
    End Function
 
    <DllImport("kernel32.dll", SetLastError:=True)>
