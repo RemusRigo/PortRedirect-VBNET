@@ -17,8 +17,15 @@ You must install .NET Runtime 10 x64 and then just run COMRedirect.exe
 
 
 
+## Statistics
+
+![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/RemusRigo/comRedirect-VBNET/total)
+
+
+
 ## Roadmap
 
+* 2026-06-04: Bug: if you scan when stopped, app will send codes when you will click the start button
 * 2026-06-03: Fix: some minor programming logic
 * 2026-06-03: Add: Configuration form
 * 2026-06-03: Add: Send data to application (search by window title)
