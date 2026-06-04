@@ -1,10 +1,7 @@
 * update settings to include window title
 * change UI (maybe add multiple interfaces)
 * add option to enable/disable logs
-* keep ## lines of data / after that clear all
-* add /new line after each line/scan
-* add create COM port icon
+* add / create COM port icon
 * check if port is disconnected / pause loop
-* after settings change, load new configuration instead of closing the app
 * maybe add theme
 * add settings form and check JSON file
