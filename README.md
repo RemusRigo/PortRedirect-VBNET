@@ -1,4 +1,4 @@
-# COM Redirect
+# Port Redirect
 
 Read a specified COM port and redirect it
 
@@ -13,13 +13,13 @@ Read a specified COM port and redirect it
 
 ## Installation
 
-You must install .NET Runtime 10 x64 and then just run COMRedirect.exe
+You must install .NET Runtime 10 x64 and then just run PortRedirect.exe
 
 
 
 ## Statistics
 
-![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/RemusRigo/comRedirect-VBNET/total)
+![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/RemusRigo/PortRedirect-VBNET/total)
 
 
 
