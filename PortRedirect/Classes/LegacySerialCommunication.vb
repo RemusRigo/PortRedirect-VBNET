@@ -14,10 +14,10 @@ Public Class LegacySerialCommunication
 
       handle = CreateFile(
          "\\.\" & port,
-         &HC0000000UI,   ' GENERIC_READ OR GENERIC_WRITE
+         GENERIC_READ Or GENERIC_WRITE,
          0,
          IntPtr.Zero,
-         3,              ' OPEN_EXISTING
+         OPEN_EXISTING,
          0,
          IntPtr.Zero)
 
@@ -26,16 +26,22 @@ Public Class LegacySerialCommunication
          Throw New Exception("Cannot open port " & port)
       End If
 
+      ' fix: empty buffer / else send codes from previous session (when process is stopped)
+      PurgeComm(handle, PURGE_RXCLEAR Or PURGE_TXCLEAR)
+      System.Threading.Thread.Sleep(200) ' Give the port a moment to settle
+      PurgeComm(handle, PURGE_RXCLEAR Or PURGE_TXCLEAR) ' Clear again
+
       comDCB.DCBlength = Marshal.SizeOf(GetType(DCB))
+
       If Not SetCommState(handle, comDCB) Then
          Log.Instance.Error("Failed to set COM state for port: " & port)
          Throw New Exception("SetCommState failed")
       End If
 
       Dim t As New COMMTIMEOUTS()
-      t.ReadIntervalTimeout = 100
+      t.ReadIntervalTimeout = -1
       t.ReadTotalTimeoutMultiplier = 0
-      t.ReadTotalTimeoutConstant = 100
+      t.ReadTotalTimeoutConstant = 0
       t.WriteTotalTimeoutMultiplier = 0
       t.WriteTotalTimeoutConstant = 0
 

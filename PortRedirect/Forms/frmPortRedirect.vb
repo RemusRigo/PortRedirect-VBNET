@@ -2,11 +2,10 @@
 Imports System.Threading
 Imports System.Windows.Forms.VisualStyles.VisualStyleElement.Rebar
 
-Public Class frmCOMRedirect
+Public Class frmPortRedirect
 
    Private cfg As New AppSettings()
    Private comPort As LegacySerialCommunication
-   Private currentSessionId As Integer = 0
 
    Private Const SYSMENU_ABOUT_ID As UInteger = 1000
 
@@ -32,19 +31,10 @@ Public Class frmCOMRedirect
    End Sub
 
    '-----------------------------------------------------------------------------------------------
-   ' frmCOMRedirect onLoad
-   Private Sub frmCOMRedirect_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-      Me.Text = AppData.appName & " " & AppData.appVersion & " by " & AppData.appAuthor
-      toolStripBtnStart_Click(Nothing, Nothing) ' Auto-start on load
-   End Sub
-
-   '-----------------------------------------------------------------------------------------------
-   ' toolStripBtnStart onClick - Start COM redirect
-   Private Sub toolStripBtnStart_Click(sender As Object, e As EventArgs) Handles toolStripBtnStart.Click
+   ' Initialize Port Listening
+   Private Sub InitializePortListening()
       lblData.Text = "Waiting for data..."
       cfg.LoadSettings()
-
-
       Dim comDCB As New DCB()
       comDCB.DCBlength = Marshal.SizeOf(GetType(DCB))
 
@@ -73,22 +63,19 @@ Public Class frmCOMRedirect
             comDCB.Flags = comDCB.Flags Or (1 << 9)
       End Select
 
-      currentSessionId += 1
-      Dim sessionIdAtCapture = currentSessionId ' Capture current ID for this specific callback
-
       Try
          comPort = New LegacySerialCommunication(cfg.Port, comDCB,
               Sub(data, count)
                  Dim txt = System.Text.Encoding.ASCII.GetString(data, 0, count)
                  Me.BeginInvoke(Sub()
-                                   If sessionIdAtCapture <> currentSessionId OrElse comPort Is Nothing Then Exit Sub
+                                   If comPort Is Nothing Then Exit Sub
 
                                    lblData.Text = txt
                                    Try
                                       AppActivate(cfg.WindowTitle)
                                       ' Give the OS a moment to switch focus
                                       System.Windows.Forms.Application.DoEvents()
-                                      Thread.Sleep(50)
+                                      'Thread.Sleep(50)
                                       SendKeys.SendWait(txt)
                                       Log.Instance.Info("Data sent to " & cfg.WindowTitle)
                                    Catch ex As ArgumentException
@@ -98,11 +85,6 @@ Public Class frmCOMRedirect
                                    End Try
                                 End Sub)
               End Sub)
-
-         StatusStrip.Items(0).Text = "Port: " & cfg.Port
-         StatusStrip.Items(1).Text = "Baud Rate: " & cfg.BaudRate
-         toolStripBtnStart.Enabled = False
-         toolStripBtnStop.Enabled = True
          Log.Instance.Info("COM port opened" & cfg.Port)
       Catch ex As Exception
          Log.Instance.Error("Failed to open COM port" & ex.Message)
@@ -110,9 +92,8 @@ Public Class frmCOMRedirect
    End Sub
 
    '-----------------------------------------------------------------------------------------------
-   ' toolStripBtnStop onClick - Stop COM redirect
-   Private Sub toolStripBtnStop_Click(sender As Object, e As EventArgs) Handles toolStripBtnStop.Click
-      currentSessionId += 1 ' Increment to invalidate all previous pending callbacks
+   ' Terminate Port Listening
+   Private Sub TerminatePortListening()
       Try
          If comPort IsNot Nothing Then
             comPort.Close()
@@ -123,27 +104,45 @@ Public Class frmCOMRedirect
          Log.Instance.Error("Failed to close COM port" & ex.Message)
       End Try
 
-      While System.Windows.Forms.Application.MessageLoop
-         System.Windows.Forms.Application.DoEvents()
-         ' A tiny sleep allows the queue to process/discard messages
-         Threading.Thread.Sleep(10)
-         Exit While
-      End While
-
       lblData.Text = "Waiting for data..."
       StatusStrip.Items(0).Text = "Port: - "
       StatusStrip.Items(1).Text = "Baud Rate: - "
       toolStripBtnStart.Enabled = True
       toolStripBtnStop.Enabled = False
-
+   End Sub
+   '-----------------------------------------------------------------------------------------------
+   ' toolStripBtnStart onClick - Start COM redirect
+   Private Sub toolStripBtnStart_Click(sender As Object, e As EventArgs) Handles toolStripBtnStart.Click
+      InitializePortListening()
+      StatusStrip.Items(0).Text = "Port: " & cfg.Port
+      StatusStrip.Items(1).Text = "Baud Rate: " & cfg.BaudRate
+      toolStripBtnStart.Enabled = False
+      toolStripBtnStop.Enabled = True
    End Sub
 
    '-----------------------------------------------------------------------------------------------
-   ' toolStripBtnSettings onClick - Show settings dialog
+   ' toolStripBtnStop onClick - Stop COM redirect
+   Private Sub toolStripBtnStop_Click(sender As Object, e As EventArgs) Handles toolStripBtnStop.Click
+      TerminatePortListening()
+   End Sub
+
+   '-----------------------------------------------------------------------------------------------
+   ' toolStripBtnSettings onClick
    Private Sub toolStripBtnSettings_Click(sender As Object, e As EventArgs) Handles toolStripBtnSettings.Click
       Using frm As New frmSettings()
-         ' Show it as a modal dialog
          frm.ShowDialog()
       End Using
    End Sub
+
+   '-----------------------------------------------------------------------------------------------
+   ' frmCOMRedirect onShow
+   Private Sub frmPortRedirect_Shown(sender As Object, e As EventArgs) Handles MyBase.Shown
+      Me.Text = AppData.appName & " " & AppData.appVersion & " by " & AppData.appAuthor
+      InitializePortListening()
+      StatusStrip.Items(0).Text = "Port: " & cfg.Port
+      StatusStrip.Items(1).Text = "Baud Rate: " & cfg.BaudRate
+      toolStripBtnStart.Enabled = False
+      toolStripBtnStop.Enabled = True
+   End Sub
+
 End Class

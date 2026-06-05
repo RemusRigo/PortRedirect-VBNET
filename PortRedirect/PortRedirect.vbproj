@@ -2,25 +2,34 @@
 
 <PropertyGroup>
    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-   <ApplicationIcon>Res\setupapi 020.ico</ApplicationIcon>
    <MyType>WindowsForms</MyType>
    <OutputType>WinExe</OutputType>
-   <RootNamespace>COM_Redirect</RootNamespace>
+   <RootNamespace>PortRedirect</RootNamespace>
    <StartupObject>Sub Main</StartupObject>
    <TargetFramework>net10.0-windows</TargetFramework>
    <UseWindowsForms>true</UseWindowsForms>
-   <Platforms>AnyCPU;x64</Platforms>
+   <Platforms>x64;x86</Platforms>
 </PropertyGroup>
 
-<ItemGroup>
-   <None Remove="Update.bat" />
-   <None Remove="Upload.bat" />
-   <None Remove="Upload.ps1" />
-</ItemGroup>
+<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
+   <PlatformTarget>x86</PlatformTarget>
+   <OutputPath>bin\Debug\x86\</OutputPath>
+</PropertyGroup>
 
-<ItemGroup>
-   <Content Include="Res\setupapi 020.ico" />
-</ItemGroup>
+<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+   <PlatformTarget>x64</PlatformTarget>
+   <OutputPath>bin\Debug\x64\</OutputPath>
+</PropertyGroup>
+
+<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
+   <PlatformTarget>x86</PlatformTarget>
+   <OutputPath>bin\Release\x86\</OutputPath>
+</PropertyGroup>
+
+<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+   <PlatformTarget>x64</PlatformTarget>
+   <OutputPath>bin\Release\x64\</OutputPath>
+</PropertyGroup>
 
 <ItemGroup>
    <Import Include="System.Data" />
@@ -34,19 +43,6 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Application.myapp</DependentUpon>
    </Compile>
-   <Compile Update="My Project\Resources.Designer.vb">
-     <DesignTime>True</DesignTime>
-     <AutoGen>True</AutoGen>
-     <DependentUpon>Resources.resx</DependentUpon>
-   </Compile>
-</ItemGroup>
-
-<ItemGroup>
-  <EmbeddedResource Update="My Project\Resources.resx">
-    <CustomToolNamespace>My.Resources</CustomToolNamespace>
-    <Generator>VbMyResourcesResXFileCodeGenerator</Generator>
-    <LastGenOutput>Resources.Designer.vb</LastGenOutput>
-  </EmbeddedResource>
 </ItemGroup>
 
 <ItemGroup>

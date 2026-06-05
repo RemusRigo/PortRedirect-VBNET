@@ -9,6 +9,15 @@ Imports System.Runtime.InteropServices
 
 Public Module kernel32_dll
 
+   Public Const GENERIC_READ As UInteger = &H80000000UI
+   Public Const GENERIC_WRITE As UInteger = &H40000000UI
+
+   Public Const CREATE_NEW As UInteger = 1
+   Public Const CREATE_ALWAYS As UInteger = 2
+   Public Const OPEN_EXISTING As UInteger = 3
+   Public Const OPEN_ALWAYS As UInteger = 4
+   Public Const TRUNCATE_EXISTING As UInteger = 5
+
    Public Const PURGE_TXABORT As Integer = &H1
    Public Const PURGE_RXABORT As Integer = &H2
    Public Const PURGE_TXCLEAR As Integer = &H4
