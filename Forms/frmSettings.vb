@@ -28,26 +28,53 @@
    '-----------------------------------------------------------------------------------------------
    ' frmSettings onLoad - Populate controls and load settings
    Private Sub frmSettings_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+      'btnOk.Text = "OK"
       LoadDefaults()
 
       cfg.LoadSettings()
+
+      ' MessageBox.Show(cfg.Method.ToString())
+      '  MessageBox.Show(cfg.WindowTitle)
+
+      If cfg.SerialCommMethod = 0 Then
+         rBtnLegacy.Checked = True
+      ElseIf cfg.SerialCommMethod = 1 Then
+         rBtnDotNet.Checked = True
+      End If
+
       cbPort.Text = cfg.Port
       cbBaudRate.Text = cfg.BaudRate.ToString()
       cbDataBits.Text = cfg.DataBits.ToString()
       cbParity.Text = cfg.Parity.ToString()
       cbStopBits.Text = cfg.StopBits.ToString()
       cbFlowControl.SelectedIndex = cfg.FlowControl
+
+      cbWindowTitle.Text = cfg.WindowTitle
    End Sub
 
    '-----------------------------------------------------------------------------------------------
    ' frmSettings onFormClosing - Save settings
    Private Sub frmSettings_FormClosing(sender As Object, e As FormClosingEventArgs) Handles MyBase.FormClosing
+      If rBtnLegacy.Checked Then
+         cfg.SerialCommMethod = 0
+      ElseIf rBtnDotNet.Checked Then
+         cfg.SerialCommMethod = 1
+      End If
+
       cfg.Port = cbPort.Text
       cfg.BaudRate = CInt(cbBaudRate.Text)
       cfg.DataBits = CInt(cbDataBits.Text)
       cfg.Parity = CInt(cbParity.Text)
       cfg.StopBits = CInt(cbStopBits.Text)
       cfg.FlowControl = cbFlowControl.SelectedIndex
+
+      cfg.WindowTitle = cbWindowTitle.Text
+
       cfg.SaveSettings()
    End Sub
+
+   Private Sub btnOk_Click(sender As Object, e As EventArgs) Handles btnOk.Click
+      Me.DialogResult = DialogResult.OK
+   End Sub
+
 End Class

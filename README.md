@@ -25,9 +25,8 @@ You must install .NET Runtime 10 x64 and then just run PortRedirect.exe
 
 ## Roadmap
 
-* 2026-06-06: Fix [Legacy]: if process is terminated and you are scannind, data will remain in the buffer and will be sent to the new process,
-                            this is not good, need to clear buffer when process is terminated
-* 2026-06-05: »»»: Split main code into two projects: Legacy mode and modern mode (.NET)
+* 2026-06-06: Fix: [Legacy mode] if process is terminated and you are scannind, data will remain in the buffer and will be sent to the new process,
+                   this is not good, need to clear buffer when process is terminated
 * 2026-06-04: Bug: if you scan when stopped, app will send codes when you will click the start button
 * 2026-06-03: Fix: some minor programming logic
 * 2026-06-03: Add: Configuration form

@@ -1,11 +1,13 @@
-﻿Imports System.Runtime.InteropServices
+﻿Imports System.IO.Ports
+Imports System.Runtime.InteropServices
 Imports System.Threading
 Imports System.Windows.Forms.VisualStyles.VisualStyleElement.Rebar
 
 Public Class frmPortRedirect
 
    Private cfg As New AppSettings()
-   Private comPort As LegacySerialCommunication
+   Private legacyPort As LegacySerialCommunication
+   Private WithEvents netPort As SerialPort
 
    Private Const SYSMENU_ABOUT_ID As UInteger = 1000
 
@@ -31,10 +33,8 @@ Public Class frmPortRedirect
    End Sub
 
    '-----------------------------------------------------------------------------------------------
-   ' Initialize Port Listening
-   Private Sub InitializePortListening()
-      lblData.Text = "Waiting for data..."
-      cfg.LoadSettings()
+   ' Initialize Legacy Port Listening
+   Private Sub InitializeLegacyPortListening()
       Dim comDCB As New DCB()
       comDCB.DCBlength = Marshal.SizeOf(GetType(DCB))
 
@@ -64,11 +64,11 @@ Public Class frmPortRedirect
       End Select
 
       Try
-         comPort = New LegacySerialCommunication(cfg.Port, comDCB,
+         legacyPort = New LegacySerialCommunication(cfg.Port, comDCB,
               Sub(data, count)
                  Dim txt = System.Text.Encoding.ASCII.GetString(data, 0, count)
                  Me.BeginInvoke(Sub()
-                                   If comPort Is Nothing Then Exit Sub
+                                   If legacyPort Is Nothing Then Exit Sub
 
                                    lblData.Text = txt
                                    Try
@@ -92,12 +92,12 @@ Public Class frmPortRedirect
    End Sub
 
    '-----------------------------------------------------------------------------------------------
-   ' Terminate Port Listening
-   Private Sub TerminatePortListening()
+   ' Terminate Legacy Port Listening
+   Private Sub TerminateLegacyPortListening()
       Try
-         If comPort IsNot Nothing Then
-            comPort.Close()
-            comPort = Nothing
+         If legacyPort IsNot Nothing Then
+            legacyPort.Close()
+            legacyPort = Nothing
             Log.Instance.Info("COM port closed")
          End If
       Catch ex As Exception
@@ -110,10 +110,83 @@ Public Class frmPortRedirect
       toolStripBtnStart.Enabled = True
       toolStripBtnStop.Enabled = False
    End Sub
+
+   '-----------------------------------------------------------------------------------------------
+   ' Initialize Net Port Listening
+   Private Sub InitializeNetPortListening()
+      Try
+         ' Initialize native .NET object
+         netPort = New SerialPort(cfg.Port, cfg.BaudRate, cfg.Parity, cfg.DataBits, cfg.StopBits)
+
+         ' Configure Flow Control using native Enumerations
+         Select Case cfg.FlowControl
+            Case 0 : netPort.Handshake = Handshake.None
+            Case 1 : netPort.Handshake = Handshake.RequestToSend
+            Case 2 : netPort.Handshake = Handshake.XOnXOff
+         End Select
+
+         netPort.Open()
+
+         ' fix: empty buffer / else send codes from previous session (when process is stopped)
+         netPort.DiscardInBuffer()
+         netPort.DiscardOutBuffer()
+         'System.Threading.Thread.Sleep(200)
+         'netPort.DiscardInBuffer()
+         'netPort.DiscardOutBuffer()
+
+         Log.Instance.Info("COM port opened: " & cfg.Port)
+
+      Catch ex As Exception
+         Log.Instance.Error("Failed to open COM port: " & ex.Message)
+      End Try
+   End Sub
+
+   Private Sub netPort_DataReceived(sender As Object, e As SerialDataReceivedEventArgs) Handles netPort.DataReceived
+      ' Read the data immediately
+      Dim incomingData As String = netPort.ReadExisting()
+
+      ' Marshal back to UI thread for processing
+      Me.BeginInvoke(Sub()
+                        lblData.Text = incomingData
+                        Try
+                           AppActivate(cfg.WindowTitle)
+                           System.Windows.Forms.Application.DoEvents()
+                           SendKeys.SendWait(incomingData)
+                           Log.Instance.Info("Data sent to " & cfg.WindowTitle)
+                        Catch ex As ArgumentException
+                           Log.Instance.Error("Failed to activate window: [" & cfg.WindowTitle & "] " & ex.Message)
+                        Catch ex As Exception
+                           Log.Instance.Error("Unexpected error occurred. " & ex.Message)
+                        End Try
+                     End Sub)
+   End Sub
+
+   '-----------------------------------------------------------------------------------------------
+   ' Terminate Net Port Listening
+   Private Sub TerminateNetPortListening()
+      If netPort IsNot Nothing Then
+         If netPort.IsOpen Then netPort.Close()
+         netPort.Dispose()
+         netPort = Nothing
+      End If
+
+      lblData.Text = "Waiting for data..."
+      StatusStrip.Items(0).Text = "Port: - "
+      StatusStrip.Items(1).Text = "Baud Rate: - "
+      toolStripBtnStart.Enabled = True
+      toolStripBtnStop.Enabled = False
+   End Sub
+
+
    '-----------------------------------------------------------------------------------------------
    ' toolStripBtnStart onClick - Start COM redirect
    Private Sub toolStripBtnStart_Click(sender As Object, e As EventArgs) Handles toolStripBtnStart.Click
-      InitializePortListening()
+      If cfg.SerialCommMethod = 0 Then
+         InitializeLegacyPortListening()
+      ElseIf cfg.SerialCommMethod = 1 Then
+         InitializeNetPortListening()
+      End If
+
       StatusStrip.Items(0).Text = "Port: " & cfg.Port
       StatusStrip.Items(1).Text = "Baud Rate: " & cfg.BaudRate
       toolStripBtnStart.Enabled = False
@@ -123,7 +196,11 @@ Public Class frmPortRedirect
    '-----------------------------------------------------------------------------------------------
    ' toolStripBtnStop onClick - Stop COM redirect
    Private Sub toolStripBtnStop_Click(sender As Object, e As EventArgs) Handles toolStripBtnStop.Click
-      TerminatePortListening()
+      If cfg.SerialCommMethod = 0 Then
+         TerminateLegacyPortListening()
+      ElseIf cfg.SerialCommMethod = 1 Then
+         TerminateNetPortListening()
+      End If
    End Sub
 
    '-----------------------------------------------------------------------------------------------
@@ -138,11 +215,22 @@ Public Class frmPortRedirect
    ' frmCOMRedirect onShow
    Private Sub frmPortRedirect_Shown(sender As Object, e As EventArgs) Handles MyBase.Shown
       Me.Text = AppData.appName & " " & AppData.appVersion & " by " & AppData.appAuthor
-      InitializePortListening()
+      lblData.Text = "Waiting for data..."
+      cfg.LoadSettings()
+
+      If cfg.SerialCommMethod = 0 Then
+         InitializeLegacyPortListening()
+      ElseIf cfg.SerialCommMethod = 1 Then
+         InitializeNetPortListening()
+      End If
+
       StatusStrip.Items(0).Text = "Port: " & cfg.Port
       StatusStrip.Items(1).Text = "Baud Rate: " & cfg.BaudRate
       toolStripBtnStart.Enabled = False
       toolStripBtnStop.Enabled = True
    End Sub
 
+   Private Sub frmPortRedirect_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+
+   End Sub
 End Class

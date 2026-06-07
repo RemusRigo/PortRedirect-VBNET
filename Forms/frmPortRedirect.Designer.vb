@@ -29,8 +29,8 @@ Partial Class frmPortRedirect
       toolStripBtnStop = New ToolStripButton()
       toolStripBtnSettings = New ToolStripButton()
       StatusStrip = New StatusStrip()
-      ToolStripStatusLabel1 = New ToolStripStatusLabel()
-      ToolStripStatusLabel2 = New ToolStripStatusLabel()
+      toolStripStatusLabelPort = New ToolStripStatusLabel()
+      toolStripStatusLabelBaudRate = New ToolStripStatusLabel()
       imgListButtons = New ImageList(components)
       lblData = New Label()
       ToolStrip.SuspendLayout()
@@ -71,24 +71,24 @@ Partial Class frmPortRedirect
       ' 
       ' StatusStrip
       ' 
-      StatusStrip.Items.AddRange(New ToolStripItem() {ToolStripStatusLabel1, ToolStripStatusLabel2})
+      StatusStrip.Items.AddRange(New ToolStripItem() {toolStripStatusLabelPort, toolStripStatusLabelBaudRate})
       StatusStrip.Location = New Point(0, 127)
       StatusStrip.Name = "StatusStrip"
       StatusStrip.Size = New Size(438, 22)
       StatusStrip.TabIndex = 2
       StatusStrip.Text = "StatusStrip1"
       ' 
-      ' ToolStripStatusLabel1
+      ' toolStripStatusLabelPort
       ' 
-      ToolStripStatusLabel1.Name = "ToolStripStatusLabel1"
-      ToolStripStatusLabel1.Size = New Size(120, 17)
-      ToolStripStatusLabel1.Text = "ToolStripStatusLabel1"
+      toolStripStatusLabelPort.Name = "toolStripStatusLabelPort"
+      toolStripStatusLabelPort.Size = New Size(32, 17)
+      toolStripStatusLabelPort.Text = "Port:"
       ' 
-      ' ToolStripStatusLabel2
+      ' toolStripStatusLabelBaudRate
       ' 
-      ToolStripStatusLabel2.Name = "ToolStripStatusLabel2"
-      ToolStripStatusLabel2.Size = New Size(120, 17)
-      ToolStripStatusLabel2.Text = "ToolStripStatusLabel2"
+      toolStripStatusLabelBaudRate.Name = "toolStripStatusLabelBaudRate"
+      toolStripStatusLabelBaudRate.Size = New Size(60, 17)
+      toolStripStatusLabelBaudRate.Text = "BaudRate:"
       ' 
       ' imgListButtons
       ' 
@@ -108,7 +108,7 @@ Partial Class frmPortRedirect
       lblData.Name = "lblData"
       lblData.Size = New Size(438, 102)
       lblData.TabIndex = 3
-      lblData.Text = "Received Data"
+      lblData.Text = "Waiting for data..."
       lblData.TextAlign = ContentAlignment.MiddleCenter
       ' 
       ' frmPortRedirect
@@ -119,6 +119,7 @@ Partial Class frmPortRedirect
       Controls.Add(lblData)
       Controls.Add(StatusStrip)
       Controls.Add(ToolStrip)
+      Icon = CType(resources.GetObject("$this.Icon"), Icon)
       Margin = New Padding(4, 3, 4, 3)
       Name = "frmPortRedirect"
       Text = "Port Redirect"
@@ -135,9 +136,9 @@ Partial Class frmPortRedirect
    Friend WithEvents toolStripBtnStop As ToolStripButton
    Friend WithEvents toolStripBtnSettings As ToolStripButton
    Friend WithEvents StatusStrip As StatusStrip
-   Friend WithEvents ToolStripStatusLabel1 As ToolStripStatusLabel
-   Friend WithEvents ToolStripStatusLabel2 As ToolStripStatusLabel
    Friend WithEvents imgListButtons As ImageList
    Friend WithEvents lblData As Label
+   Friend WithEvents toolStripStatusLabelPort As ToolStripStatusLabel
+   Friend WithEvents toolStripStatusLabelBaudRate As ToolStripStatusLabel
 
 End Class

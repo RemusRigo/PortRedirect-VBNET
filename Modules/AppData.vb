@@ -7,7 +7,7 @@
 Module AppData
 
    Public Const appName As String = "PortRedirect"
-   Public Const appVersion As String = "v1.1"
+   Public Const appVersion As String = "v1.2"
    Public Const appAuthor As String = "Remus Rigo"
    Public Const appLink As String = "© 2026 Remus Rigo"
 

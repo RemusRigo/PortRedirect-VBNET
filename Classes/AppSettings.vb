@@ -4,13 +4,16 @@ Imports System.Text.Json
 Imports System.Text.Json.Nodes
 
 Public Class AppSettings
-
+   '  General -------------------------------------------------------------------------------------
+   Public Property SerialCommMethod As Integer = 0
+   ' Connection -----------------------------------------------------------------------------------
    Public Property Port As String = "COM1"
    Public Property BaudRate As Integer = 9600
    Public Property DataBits As Integer = 8
    Public Property Parity As Integer = 0
    Public Property StopBits As Integer = 1
    Public Property FlowControl As Integer = 0
+   ' Target ---------------------------------------------------------------------------------------
    Public Property WindowTitle As String = "Notepad"
 
    Private ReadOnly Property SettingsFile As String
@@ -23,19 +26,31 @@ Public Class AppSettings
    ' Load Settings from JSON file
    Public Sub LoadSettings()
       If Not File.Exists(SettingsFile) Then
+         ' General
+         SerialCommMethod = 0
+         ' Connection
+         SerialCommMethod = 0
          Port = "COM1"
          BaudRate = 9600
          DataBits = 8
          Parity = 0
          StopBits = 1
          FlowControl = 0
+         ' Target
          WindowTitle = "*Notepad"
          Return
       End If
 
       Dim root As JsonNode = JsonNode.Parse(File.ReadAllText(SettingsFile))
-      Dim com As JsonObject = TryCast(root?("Connection"), JsonObject)
 
+      ' General -----------------------------------------------------------------------------------
+      Dim general As JsonObject = TryCast(root?("General"), JsonObject)
+      If general IsNot Nothing Then
+         SerialCommMethod = If(general("SerialCommMethod")?.AsValue().GetValue(Of Integer)(), 0)
+      End If
+
+      ' Connection --------------------------------------------------------------------------------
+      Dim com As JsonObject = TryCast(root?("Connection"), JsonObject)
       If com IsNot Nothing Then
          Port = If(com("Port")?.AsValue().GetValue(Of String)(), "COM1")
          BaudRate = If(com("BaudRate")?.AsValue().GetValue(Of Integer)(), 9600)
@@ -43,12 +58,25 @@ Public Class AppSettings
          Parity = If(com("Parity")?.AsValue().GetValue(Of Integer)(), 0)
          StopBits = If(com("StopBits")?.AsValue().GetValue(Of Integer)(), 1)
          FlowControl = If(com("FlowControl")?.AsValue().GetValue(Of Integer)(), 0)
-         WindowTitle = If(com("WindowTitle")?.AsValue().GetValue(Of String)(), "Notepad")
       End If
+
+      ' Target ------------------------------------------------------------------------------------
+      Dim target As JsonObject = TryCast(root?("Target"), JsonObject)
+      If target IsNot Nothing Then
+         WindowTitle = If(target("WindowTitle")?.AsValue().GetValue(Of String)(), "Notepad")
+      End If
+
    End Sub
 
    ' Save Settings to JSON file
    Public Sub SaveSettings()
+
+      ' General -----------------------------------------------------------------------------------
+      Dim general As New JsonObject From {
+          {"SerialCommMethod", SerialCommMethod}
+      }
+
+      ' Connection --------------------------------------------------------------------------------
       Dim com As New JsonObject From {
           {"Port", Port},
           {"BaudRate", BaudRate},
@@ -58,8 +86,15 @@ Public Class AppSettings
           {"FlowControl", FlowControl}
       }
 
+      ' Target ------------------------------------------------------------------------------------
+      Dim target As New JsonObject From {
+          {"WindowTitle", WindowTitle}
+      }
+
       Dim root As New JsonObject From {
-          {"Connection", com}
+          {"General", general},
+          {"Connection", com},
+          {"Target", target}
       }
 
       Dim options As New JsonSerializerOptions With {.WriteIndented = True}

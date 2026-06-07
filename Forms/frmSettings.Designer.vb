@@ -36,7 +36,16 @@ Partial Class frmSettings
       lblBaudRate = New Label()
       cbPort = New ComboBox()
       lblPort = New Label()
+      grpBoxMethod = New GroupBox()
+      rBtnDotNet = New RadioButton()
+      rBtnLegacy = New RadioButton()
+      btnOk = New Button()
+      grpBoxTarget = New GroupBox()
+      cbWindowTitle = New ComboBox()
+      lblWindowTitle = New Label()
       grpBoxInput.SuspendLayout()
+      grpBoxMethod.SuspendLayout()
+      grpBoxTarget.SuspendLayout()
       SuspendLayout()
       ' 
       ' grpBoxInput
@@ -53,7 +62,7 @@ Partial Class frmSettings
       grpBoxInput.Controls.Add(lblBaudRate)
       grpBoxInput.Controls.Add(cbPort)
       grpBoxInput.Controls.Add(lblPort)
-      grpBoxInput.Location = New Point(3, 12)
+      grpBoxInput.Location = New Point(2, 60)
       grpBoxInput.Name = "grpBoxInput"
       grpBoxInput.Size = New Size(223, 193)
       grpBoxInput.TabIndex = 0
@@ -162,11 +171,87 @@ Partial Class frmSettings
       lblPort.TabIndex = 0
       lblPort.Text = "Port:"
       ' 
+      ' grpBoxMethod
+      ' 
+      grpBoxMethod.Controls.Add(rBtnDotNet)
+      grpBoxMethod.Controls.Add(rBtnLegacy)
+      grpBoxMethod.Location = New Point(2, 2)
+      grpBoxMethod.Name = "grpBoxMethod"
+      grpBoxMethod.Size = New Size(223, 52)
+      grpBoxMethod.TabIndex = 3
+      grpBoxMethod.TabStop = False
+      grpBoxMethod.Text = "Method"
+      ' 
+      ' rBtnDotNet
+      ' 
+      rBtnDotNet.AutoSize = True
+      rBtnDotNet.Location = New Point(74, 22)
+      rBtnDotNet.Name = "rBtnDotNet"
+      rBtnDotNet.Size = New Size(47, 19)
+      rBtnDotNet.TabIndex = 4
+      rBtnDotNet.TabStop = True
+      rBtnDotNet.Text = ".&Net"
+      rBtnDotNet.UseVisualStyleBackColor = True
+      ' 
+      ' rBtnLegacy
+      ' 
+      rBtnLegacy.AutoSize = True
+      rBtnLegacy.Location = New Point(6, 22)
+      rBtnLegacy.Name = "rBtnLegacy"
+      rBtnLegacy.Size = New Size(62, 19)
+      rBtnLegacy.TabIndex = 3
+      rBtnLegacy.TabStop = True
+      rBtnLegacy.Text = "&Legacy"
+      rBtnLegacy.UseVisualStyleBackColor = True
+      ' 
+      ' btnOk
+      ' 
+      btnOk.Anchor = AnchorStyles.Bottom Or AnchorStyles.Right
+      btnOk.Font = New Font("Segoe UI", 9.75F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+      btnOk.ForeColor = Color.ForestGreen
+      btnOk.Location = New Point(670, 255)
+      btnOk.Name = "btnOk"
+      btnOk.Size = New Size(23, 23)
+      btnOk.TabIndex = 4
+      btnOk.Text = "✓"
+      btnOk.UseVisualStyleBackColor = True
+      ' 
+      ' grpBoxTarget
+      ' 
+      grpBoxTarget.Controls.Add(cbWindowTitle)
+      grpBoxTarget.Controls.Add(lblWindowTitle)
+      grpBoxTarget.Location = New Point(231, 2)
+      grpBoxTarget.Name = "grpBoxTarget"
+      grpBoxTarget.Size = New Size(462, 251)
+      grpBoxTarget.TabIndex = 5
+      grpBoxTarget.TabStop = False
+      grpBoxTarget.Text = "Target"
+      ' 
+      ' cbWindowTitle
+      ' 
+      cbWindowTitle.FormattingEnabled = True
+      cbWindowTitle.Location = New Point(91, 18)
+      cbWindowTitle.Name = "cbWindowTitle"
+      cbWindowTitle.Size = New Size(364, 23)
+      cbWindowTitle.TabIndex = 15
+      ' 
+      ' lblWindowTitle
+      ' 
+      lblWindowTitle.AutoSize = True
+      lblWindowTitle.Location = New Point(8, 21)
+      lblWindowTitle.Name = "lblWindowTitle"
+      lblWindowTitle.Size = New Size(80, 15)
+      lblWindowTitle.TabIndex = 14
+      lblWindowTitle.Text = "Window Title:"
+      ' 
       ' frmSettings
       ' 
       AutoScaleDimensions = New SizeF(7F, 15F)
       AutoScaleMode = AutoScaleMode.Font
-      ClientSize = New Size(698, 211)
+      ClientSize = New Size(698, 280)
+      Controls.Add(grpBoxTarget)
+      Controls.Add(btnOk)
+      Controls.Add(grpBoxMethod)
       Controls.Add(grpBoxInput)
       FormBorderStyle = FormBorderStyle.FixedSingle
       Icon = CType(resources.GetObject("$this.Icon"), Icon)
@@ -177,6 +262,10 @@ Partial Class frmSettings
       Text = "Settings"
       grpBoxInput.ResumeLayout(False)
       grpBoxInput.PerformLayout()
+      grpBoxMethod.ResumeLayout(False)
+      grpBoxMethod.PerformLayout()
+      grpBoxTarget.ResumeLayout(False)
+      grpBoxTarget.PerformLayout()
       ResumeLayout(False)
    End Sub
 
@@ -193,4 +282,11 @@ Partial Class frmSettings
    Friend WithEvents lblFlowControl As Label
    Friend WithEvents cbStopBits As ComboBox
    Friend WithEvents lblStopBits As Label
+   Friend WithEvents grpBoxMethod As GroupBox
+   Friend WithEvents rBtnDotNet As RadioButton
+   Friend WithEvents rBtnLegacy As RadioButton
+   Friend WithEvents btnOk As Button
+   Friend WithEvents grpBoxTarget As GroupBox
+   Friend WithEvents cbWindowTitle As ComboBox
+   Friend WithEvents lblWindowTitle As Label
 End Class
