@@ -37,7 +37,7 @@ Public Class AppSettings
          StopBits = 1
          FlowControl = 0
          ' Target
-         WindowTitle = "*Notepad"
+         WindowTitle = "Notepad"
          Return
       End If
 

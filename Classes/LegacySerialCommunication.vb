@@ -12,6 +12,8 @@ Public Class LegacySerialCommunication
    Public Sub New(port As String, comDCB As DCB, cb As Action(Of Byte(), Integer))
       callback = cb
 
+      Log.Instance.Info("Initialize Win32 API Port Listening")
+
       handle = CreateFile(
          "\\.\" & port,
          GENERIC_READ Or GENERIC_WRITE,
@@ -24,6 +26,8 @@ Public Class LegacySerialCommunication
       If handle = CType(-1, IntPtr) Then
          Log.Instance.Error("Failed to open port: " & port)
          Throw New Exception("Cannot open port " & port)
+      Else
+         Log.Instance.Info("Port opened: " & port & " Baud Rate: " & comDCB.BaudRate)
       End If
 
       ' fix: empty buffer / else send codes from previous session (when process is stopped)
@@ -77,6 +81,7 @@ Public Class LegacySerialCommunication
    End Sub
 
    Public Sub Close()
+      Log.Instance.Info("Terminate Win32 API Port Listening")
       Threading.Volatile.Write(running, False)
 
       If handle <> IntPtr.Zero Then

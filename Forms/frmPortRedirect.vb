@@ -1,4 +1,5 @@
-﻿Imports System.IO.Ports
+﻿Imports System.IO
+Imports System.IO.Ports
 Imports System.Runtime.InteropServices
 Imports System.Threading
 Imports System.Windows.Forms.VisualStyles.VisualStyleElement.Rebar
@@ -85,7 +86,6 @@ Public Class frmPortRedirect
                                    End Try
                                 End Sub)
               End Sub)
-         Log.Instance.Info("COM port opened" & cfg.Port)
       Catch ex As Exception
          Log.Instance.Error("Failed to open COM port" & ex.Message)
       End Try
@@ -98,7 +98,6 @@ Public Class frmPortRedirect
          If legacyPort IsNot Nothing Then
             legacyPort.Close()
             legacyPort = Nothing
-            Log.Instance.Info("COM port closed")
          End If
       Catch ex As Exception
          Log.Instance.Error("Failed to close COM port" & ex.Message)
@@ -107,15 +106,15 @@ Public Class frmPortRedirect
       lblData.Text = "Waiting for data..."
       StatusStrip.Items(0).Text = "Port: - "
       StatusStrip.Items(1).Text = "Baud Rate: - "
-      toolStripBtnStart.Enabled = True
-      toolStripBtnStop.Enabled = False
+      btnTSStart.Enabled = True
+      btnTSStop.Enabled = False
    End Sub
 
    '-----------------------------------------------------------------------------------------------
    ' Initialize Net Port Listening
    Private Sub InitializeNetPortListening()
       Try
-         ' Initialize native .NET object
+         Log.Instance.Info("Initialize .NET Framework Port Listening")
          netPort = New SerialPort(cfg.Port, cfg.BaudRate, cfg.Parity, cfg.DataBits, cfg.StopBits)
 
          ' Configure Flow Control using native Enumerations
@@ -126,6 +125,7 @@ Public Class frmPortRedirect
          End Select
 
          netPort.Open()
+         'Log.Instance.Info("Port opened: " & cfg.Port & " Baud Rate: " & cfg.BaudRate)
 
          ' fix: empty buffer / else send codes from previous session (when process is stopped)
          netPort.DiscardInBuffer()
@@ -133,8 +133,6 @@ Public Class frmPortRedirect
          'System.Threading.Thread.Sleep(200)
          'netPort.DiscardInBuffer()
          'netPort.DiscardOutBuffer()
-
-         Log.Instance.Info("COM port opened: " & cfg.Port)
 
       Catch ex As Exception
          Log.Instance.Error("Failed to open COM port: " & ex.Message)
@@ -164,23 +162,25 @@ Public Class frmPortRedirect
    '-----------------------------------------------------------------------------------------------
    ' Terminate Net Port Listening
    Private Sub TerminateNetPortListening()
+      Log.Instance.Info("Terminate .NET Framework Port Listening")
       If netPort IsNot Nothing Then
          If netPort.IsOpen Then netPort.Close()
          netPort.Dispose()
          netPort = Nothing
+         Log.Instance.Info("Port closed: " & cfg.Port)
       End If
 
       lblData.Text = "Waiting for data..."
       StatusStrip.Items(0).Text = "Port: - "
       StatusStrip.Items(1).Text = "Baud Rate: - "
-      toolStripBtnStart.Enabled = True
-      toolStripBtnStop.Enabled = False
+      btnTSStart.Enabled = True
+      btnTSStop.Enabled = False
    End Sub
 
 
    '-----------------------------------------------------------------------------------------------
-   ' toolStripBtnStart onClick - Start COM redirect
-   Private Sub toolStripBtnStart_Click(sender As Object, e As EventArgs) Handles toolStripBtnStart.Click
+   ' btnTSStart onClick - Start Port Listening
+   Private Sub btnTSStart_Click(sender As Object, e As EventArgs) Handles btnTSStart.Click
       If cfg.SerialCommMethod = 0 Then
          InitializeLegacyPortListening()
       ElseIf cfg.SerialCommMethod = 1 Then
@@ -189,13 +189,13 @@ Public Class frmPortRedirect
 
       StatusStrip.Items(0).Text = "Port: " & cfg.Port
       StatusStrip.Items(1).Text = "Baud Rate: " & cfg.BaudRate
-      toolStripBtnStart.Enabled = False
-      toolStripBtnStop.Enabled = True
+      btnTSStart.Enabled = False
+      btnTSStop.Enabled = True
    End Sub
 
    '-----------------------------------------------------------------------------------------------
-   ' toolStripBtnStop onClick - Stop COM redirect
-   Private Sub toolStripBtnStop_Click(sender As Object, e As EventArgs) Handles toolStripBtnStop.Click
+   ' btnTSStop onClick : Terminate Port Listening
+   Private Sub btnTSStop_Click(sender As Object, e As EventArgs) Handles btnTSStop.Click
       If cfg.SerialCommMethod = 0 Then
          TerminateLegacyPortListening()
       ElseIf cfg.SerialCommMethod = 1 Then
@@ -204,8 +204,22 @@ Public Class frmPortRedirect
    End Sub
 
    '-----------------------------------------------------------------------------------------------
+   ' btnTSOpenLog onClick
+   Private Sub btnTSOpenLog_Click(sender As Object, e As EventArgs) Handles btnTSOpenLog.Click
+      Dim dt = Date.Now
+      Dim logPath = Path.Combine(AppContext.BaseDirectory, "Logs", dt.ToString("yyyy"), dt.ToString("MM"), dt.ToString("dd"), $"{appName}.log")
+
+      If File.Exists(logPath) Then
+         Process.Start(New ProcessStartInfo() With {
+           .FileName = logPath,
+         .UseShellExecute = True
+        })
+      End If
+   End Sub
+
+   '-----------------------------------------------------------------------------------------------
    ' toolStripBtnSettings onClick
-   Private Sub toolStripBtnSettings_Click(sender As Object, e As EventArgs) Handles toolStripBtnSettings.Click
+   Private Sub toolStripBtnSettings_Click(sender As Object, e As EventArgs) Handles btnTSSettings.Click
       Using frm As New frmSettings()
          frm.ShowDialog()
       End Using
@@ -218,19 +232,12 @@ Public Class frmPortRedirect
       lblData.Text = "Waiting for data..."
       cfg.LoadSettings()
 
-      If cfg.SerialCommMethod = 0 Then
-         InitializeLegacyPortListening()
-      ElseIf cfg.SerialCommMethod = 1 Then
-         InitializeNetPortListening()
-      End If
+      btnTSStart_Click(Nothing, Nothing)
 
       StatusStrip.Items(0).Text = "Port: " & cfg.Port
       StatusStrip.Items(1).Text = "Baud Rate: " & cfg.BaudRate
-      toolStripBtnStart.Enabled = False
-      toolStripBtnStop.Enabled = True
+      btnTSStart.Enabled = False
+      btnTSStop.Enabled = True
    End Sub
 
-   Private Sub frmPortRedirect_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-
-   End Sub
 End Class

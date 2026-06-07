@@ -25,9 +25,12 @@ Partial Class frmPortRedirect
       components = New ComponentModel.Container()
       Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(frmPortRedirect))
       ToolStrip = New ToolStrip()
-      toolStripBtnStart = New ToolStripButton()
-      toolStripBtnStop = New ToolStripButton()
-      toolStripBtnSettings = New ToolStripButton()
+      btnTSStart = New ToolStripButton()
+      btnTSStop = New ToolStripButton()
+      btnTSSep1 = New ToolStripSeparator()
+      btnTSOpenLog = New ToolStripButton()
+      btnTSSep2 = New ToolStripSeparator()
+      btnTSSettings = New ToolStripButton()
       StatusStrip = New StatusStrip()
       toolStripStatusLabelPort = New ToolStripStatusLabel()
       toolStripStatusLabelBaudRate = New ToolStripStatusLabel()
@@ -39,35 +42,57 @@ Partial Class frmPortRedirect
       ' 
       ' ToolStrip
       ' 
-      ToolStrip.Items.AddRange(New ToolStripItem() {toolStripBtnStart, toolStripBtnStop, toolStripBtnSettings})
+      ToolStrip.Items.AddRange(New ToolStripItem() {btnTSStart, btnTSStop, btnTSSep1, btnTSOpenLog, btnTSSep2, btnTSSettings})
       ToolStrip.Location = New Point(0, 0)
       ToolStrip.Name = "ToolStrip"
       ToolStrip.Size = New Size(438, 25)
       ToolStrip.TabIndex = 1
       ' 
-      ' toolStripBtnStart
+      ' btnTSStart
       ' 
-      toolStripBtnStart.DisplayStyle = ToolStripItemDisplayStyle.Image
-      toolStripBtnStart.Image = CType(resources.GetObject("toolStripBtnStart.Image"), Image)
-      toolStripBtnStart.ImageTransparentColor = Color.Magenta
-      toolStripBtnStart.Name = "toolStripBtnStart"
-      toolStripBtnStart.Size = New Size(23, 22)
+      btnTSStart.DisplayStyle = ToolStripItemDisplayStyle.Image
+      btnTSStart.Image = CType(resources.GetObject("btnTSStart.Image"), Image)
+      btnTSStart.ImageTransparentColor = Color.Magenta
+      btnTSStart.Name = "btnTSStart"
+      btnTSStart.Size = New Size(23, 22)
+      btnTSStart.ToolTipText = "Start Port Listening"
       ' 
-      ' toolStripBtnStop
+      ' btnTSStop
       ' 
-      toolStripBtnStop.DisplayStyle = ToolStripItemDisplayStyle.Image
-      toolStripBtnStop.Image = CType(resources.GetObject("toolStripBtnStop.Image"), Image)
-      toolStripBtnStop.ImageTransparentColor = Color.Magenta
-      toolStripBtnStop.Name = "toolStripBtnStop"
-      toolStripBtnStop.Size = New Size(23, 22)
+      btnTSStop.DisplayStyle = ToolStripItemDisplayStyle.Image
+      btnTSStop.Image = CType(resources.GetObject("btnTSStop.Image"), Image)
+      btnTSStop.ImageTransparentColor = Color.Magenta
+      btnTSStop.Name = "btnTSStop"
+      btnTSStop.Size = New Size(23, 22)
+      btnTSStop.ToolTipText = "Stop Port Listening"
       ' 
-      ' toolStripBtnSettings
+      ' btnTSSep1
       ' 
-      toolStripBtnSettings.DisplayStyle = ToolStripItemDisplayStyle.Image
-      toolStripBtnSettings.Image = CType(resources.GetObject("toolStripBtnSettings.Image"), Image)
-      toolStripBtnSettings.ImageTransparentColor = Color.Magenta
-      toolStripBtnSettings.Name = "toolStripBtnSettings"
-      toolStripBtnSettings.Size = New Size(23, 22)
+      btnTSSep1.Name = "btnTSSep1"
+      btnTSSep1.Size = New Size(6, 25)
+      ' 
+      ' btnTSOpenLog
+      ' 
+      btnTSOpenLog.DisplayStyle = ToolStripItemDisplayStyle.Image
+      btnTSOpenLog.Image = CType(resources.GetObject("btnTSOpenLog.Image"), Image)
+      btnTSOpenLog.ImageTransparentColor = Color.Magenta
+      btnTSOpenLog.Name = "btnTSOpenLog"
+      btnTSOpenLog.Size = New Size(23, 22)
+      btnTSOpenLog.ToolTipText = "Open current log (from today)"
+      ' 
+      ' btnTSSep2
+      ' 
+      btnTSSep2.Name = "btnTSSep2"
+      btnTSSep2.Size = New Size(6, 25)
+      ' 
+      ' btnTSSettings
+      ' 
+      btnTSSettings.DisplayStyle = ToolStripItemDisplayStyle.Image
+      btnTSSettings.Image = CType(resources.GetObject("btnTSSettings.Image"), Image)
+      btnTSSettings.ImageTransparentColor = Color.Magenta
+      btnTSSettings.Name = "btnTSSettings"
+      btnTSSettings.Size = New Size(23, 22)
+      btnTSSettings.ToolTipText = "Open Settings"
       ' 
       ' StatusStrip
       ' 
@@ -132,13 +157,16 @@ Partial Class frmPortRedirect
 
    End Sub
    Friend WithEvents ToolStrip As ToolStrip
-   Friend WithEvents toolStripBtnStart As ToolStripButton
-   Friend WithEvents toolStripBtnStop As ToolStripButton
-   Friend WithEvents toolStripBtnSettings As ToolStripButton
+   Friend WithEvents btnTSStart As ToolStripButton
+   Friend WithEvents btnTSStop As ToolStripButton
+   Friend WithEvents btnTSSettings As ToolStripButton
    Friend WithEvents StatusStrip As StatusStrip
    Friend WithEvents imgListButtons As ImageList
    Friend WithEvents lblData As Label
    Friend WithEvents toolStripStatusLabelPort As ToolStripStatusLabel
    Friend WithEvents toolStripStatusLabelBaudRate As ToolStripStatusLabel
+   Friend WithEvents btnTSSep1 As ToolStripSeparator
+   Friend WithEvents btnTSOpenLog As ToolStripButton
+   Friend WithEvents btnTSSep2 As ToolStripSeparator
 
 End Class
